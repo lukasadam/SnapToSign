@@ -36,7 +36,7 @@ uv create venv
 4️⃣ Install dependencies for the project
 
 ```bash
-uv sync
+uv pip install -e .
 ```
 
 ## 🚀 Usage
@@ -44,5 +44,5 @@ uv sync
 Run the script from the command line:
 
 ```bash
-uv run python main.py --rna_h5ad path/to/rna.h5ad --atac_h5ad path/to/atac.h5ad --fragment_files path/to/fragments/* --out_dir path/to/output
+py2disc --rna_h5ad path/to/rna.h5ad --atac_h5ad path/to/atac.h5ad --fragment_files path/to/fragments/* --out_dir path/to/output
 ```

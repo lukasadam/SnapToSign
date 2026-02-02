@@ -2,7 +2,7 @@ import argparse
 import scanpy as sc
 from pathlib import Path
 from typing import Dict, Optional
-from converter import export_h5ad_to_signac_dir
+from src.disc_convert.converter import export_h5ad_to_signac_dir
 
 def main():
     # Set up argument parser
@@ -35,6 +35,3 @@ def main():
         atac_layer=atac_layer,
         copy_fragments=copy_fragments
     )
-
-if __name__ == "__main__":
-    main()
