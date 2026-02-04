@@ -125,9 +125,9 @@ def _peak_to_bed(features: pd.Index) -> pd.DataFrame:
 def export_h5ad_to_signac_dir(
     adata_rna,
     adata_atac,
-    fragment_files: Dict[str, Path],
     out_dir: Path,
     *,
+    fragment_files: Optional[Dict[str, Path]] = None,
     rna_layer: Optional[str] = None,
     atac_layer: Optional[str] = None,
     copy_fragments: bool = True,
@@ -138,11 +138,20 @@ def export_h5ad_to_signac_dir(
 
     Parameters
     ----------
-    rna_layer / atac_layer:
-        If your counts are stored in `.layers["counts"]` set e.g. rna_layer="counts".
-        If None, uses `.X`.
-    copy_fragments:
-        If False, will symlink fragments into out_dir/fragments where possible.
+    adata_rna : AnnData
+        AnnData object containing RNA data.
+    adata_atac : AnnData
+        AnnData object containing ATAC data.
+    out_dir : Path
+        Output directory path.
+    fragment_files : Optional[Dict[str, Path]], optional
+        Dictionary mapping sample IDs to fragment file paths (default is None).
+    rna_layer : Optional[str], optional
+        Layer name in adata_rna to use for RNA counts (default is None, uses .X).
+    atac_layer : Optional[str], optional
+        Layer name in adata_atac to use for ATAC counts (default is None, uses .X).
+    copy_fragments : bool, optional
+        Whether to copy fragment files instead of symlinking (default is True).
     """
     out_dir = Path(out_dir)
     (out_dir / "rna").mkdir(parents=True, exist_ok=True)
@@ -224,26 +233,28 @@ def export_h5ad_to_signac_dir(
     _export_obsm(adata_atac, "X_umap", "atac_umap.csv.gz")
 
     # --- Fragments ---
-    # Copy/symlink all provided fragments into out_dir/fragments
-    for sample_id, fpath in fragment_files.items():
-        fpath = Path(fpath)
-        if not fpath.exists():
-            continue
-        dest = out_dir / "fragments" / f"{sample_id}.tsv.gz"
-        if dest.exists():
-            continue
-        if copy_fragments:
-            shutil.copy2(fpath, dest)
-        else:
-            dest.symlink_to(fpath)
-        
-        # Also copy the index file if present
-        fpath_idx = fpath.with_suffix(".tsv.gz.tbi")
-        if fpath_idx.exists():
-            dest_idx = dest.with_suffix(".tbi")
+    # If fragment_files is provided, copy/symlink them into the fragments directory
+    if fragment_files is not None:
+        # Copy/symlink all provided fragments into out_dir/fragments
+        for sample_id, fpath in fragment_files.items():
+            fpath = Path(fpath)
+            if not fpath.exists():
+                continue
+            dest = out_dir / "fragments" / f"{sample_id}.tsv.gz"
+            if dest.exists():
+                continue
             if copy_fragments:
-                shutil.copy2(fpath_idx, dest_idx)
+                shutil.copy2(fpath, dest)
             else:
-                dest_idx.symlink_to(fpath_idx)
+                dest.symlink_to(fpath)
+            
+            # Also copy the index file if present
+            fpath_idx = fpath.with_suffix(".tsv.gz.tbi")
+            if fpath_idx.exists():
+                dest_idx = dest.with_suffix(".tbi")
+                if copy_fragments:
+                    shutil.copy2(fpath_idx, dest_idx)
+                else:
+                    dest_idx.symlink_to(fpath_idx)
 
     print(f"Export complete: {out_dir}")
