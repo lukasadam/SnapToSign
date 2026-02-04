@@ -9,3 +9,10 @@ dependencies = [
     "scanpy>=1.11.5",
     "snapatac2>=2.8.0",
 ]
+
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project.scripts]
+snaptosign = "snaptosign.cli:main"

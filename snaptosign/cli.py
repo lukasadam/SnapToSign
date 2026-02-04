@@ -2,17 +2,17 @@ import argparse
 import scanpy as sc
 from pathlib import Path
 from typing import Dict, Optional
-from src.disc_convert.converter import export_h5ad_to_signac_dir
+from snaptosign.converter import export_h5ad_to_signac_dir
 
 def main():
     # Set up argument parser
     parser = argparse.ArgumentParser(description="Convert h5ad files to Signac directory structure.")
     parser.add_argument("--rna_h5ad", type=str, required=True, help="Path to RNA h5ad file.")
     parser.add_argument("--atac_h5ad", type=str, required=True, help="Path to ATAC h5ad file.")
-    parser.add_argument("--fragment_files", type=str, nargs='+', required=True, help="List of fragment file paths.")
     parser.add_argument("--out_dir", type=str, required=True, help="Output directory for Signac files.")
     parser.add_argument("--rna_layer", type=str, default=None, help="RNA layer to use.")
     parser.add_argument("--atac_layer", type=str, default=None, help="ATAC layer to use.")
+    parser.add_argument("--fragment_files", type=str, nargs='+', required=False, help="List of fragment file paths.")
     parser.add_argument("--copy_fragments", action='store_true', help="Whether to copy fragment files instead of symlinking.")
     args = parser.parse_args()
     

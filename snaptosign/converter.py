@@ -126,7 +126,6 @@ def export_h5ad_to_signac_dir(
     adata_rna,
     adata_atac,
     out_dir: Path,
-    *,
     fragment_files: Optional[Dict[str, Path]] = None,
     rna_layer: Optional[str] = None,
     atac_layer: Optional[str] = None,
