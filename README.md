@@ -41,21 +41,6 @@ SNAPTOSIGN_IMAGE=snaptosign:ci ./run_snaptosign.sh \
 	data/object.rds
 ```
 
-## Apptainer/Singularity
-
-Build a `.sif`:
-
-```bash
-apptainer build snaptosign.sif Apptainer.def
-```
-
-Run (no bind flags needed if your cluster auto-binds `$PWD`; otherwise add `-B $PWD`):
-
-```bash
-apptainer exec snaptosign.sif py2disc --help
-apptainer exec snaptosign.sif disc2r --help
-```
-
 ## CLI usage
 
 Export directory structure:
