@@ -3,52 +3,52 @@
 # Minimal R tests (not a package): exit non-zero on failure.
 
 gzip_file <- function(src, dst) {
-    in_con <- file(src, open = "rb")
-    on.exit(close(in_con), add = TRUE)
-    out_con <- gzfile(dst, open = "wb")
-    on.exit(close(out_con), add = TRUE)
+  in_con <- file(src, open = "rb")
+  on.exit(close(in_con), add = TRUE)
+  out_con <- gzfile(dst, open = "wb")
+  on.exit(close(out_con), add = TRUE)
 
-    repeat {
-        buf <- readBin(in_con, what = "raw", n = 1024 * 1024)
-        if (length(buf) == 0) {
-            break
-        }
-        writeBin(buf, out_con)
+  repeat {
+    buf <- readBin(in_con, what = "raw", n = 1024 * 1024)
+    if (length(buf) == 0) {
+      break
     }
+    writeBin(buf, out_con)
+  }
 
-    unlink(src)
+  unlink(src)
 }
 
 write_tsv_gz <- function(df, path) {
-    tmp <- sub("\\.gz$", "", path)
-    write.table(
-        df,
-        file = tmp,
-        sep = "\t",
-        quote = FALSE,
-        row.names = FALSE,
-        col.names = FALSE
-    )
-    gzip_file(tmp, path)
+  tmp <- sub("\\.gz$", "", path)
+  write.table(
+    df,
+    file = tmp,
+    sep = "\t",
+    quote = FALSE,
+    row.names = FALSE,
+    col.names = FALSE
+  )
+  gzip_file(tmp, path)
 }
 
 write_csv_gz <- function(df, path) {
-    tmp <- sub("\\.gz$", "", path)
-    write.csv(df, file = tmp)
-    gzip_file(tmp, path)
+  tmp <- sub("\\.gz$", "", path)
+  write.csv(df, file = tmp)
+  gzip_file(tmp, path)
 }
 
 ca <- commandArgs(trailingOnly = FALSE)
 file_arg <- ca[grepl("^--file=", ca)]
 script_path <- if (length(file_arg) > 0) {
-    sub("^--file=", "", file_arg[1])
+  sub("^--file=", "", file_arg[1])
 } else {
-    NA_character_
+  NA_character_
 }
 script_dir <- if (!is.na(script_path) && nzchar(script_path)) {
-    dirname(normalizePath(script_path, mustWork = TRUE))
+  dirname(normalizePath(script_path, mustWork = TRUE))
 } else {
-    getwd()
+  getwd()
 }
 
 source(file.path(script_dir, "..", "converter.R"))
@@ -67,9 +67,9 @@ write_tsv_gz(barcodes, file.path(base, "rna", "barcodes.tsv.gz"))
 write_tsv_gz(barcodes, file.path(base, "atac", "barcodes.tsv.gz"))
 
 rna_features <- data.frame(
-    V1 = c("g1", "g2"),
-    V2 = c("g1", "g2"),
-    V3 = c("Gene Expression", "Gene Expression")
+  V1 = c("g1", "g2"),
+  V2 = c("g1", "g2"),
+  V3 = c("Gene Expression", "Gene Expression")
 )
 write_tsv_gz(rna_features, file.path(base, "rna", "features.tsv.gz"))
 
@@ -79,7 +79,7 @@ write_tsv_gz(atac_features, file.path(base, "atac", "features.tsv.gz"))
 
 # 10x convention: features x cells
 suppressPackageStartupMessages({
-    library(Matrix)
+  library(Matrix)
 })
 
 rna_mat <- Matrix(c(1, 0, 2, 3), nrow = 2, sparse = TRUE)
@@ -94,10 +94,10 @@ Matrix::writeMM(atac_mat, atac_tmp)
 gzip_file(atac_tmp, file.path(base, "atac", "matrix.mtx.gz"))
 
 bed <- data.frame(
-    chr = c("chr1", "chr2"),
-    start = c(1, 5),
-    end = c(2, 6),
-    name = peaks
+  chr = c("chr1", "chr2"),
+  start = c(1, 5),
+  end = c(2, 6),
+  name = peaks
 )
 write_tsv_gz(bed, file.path(base, "atac", "peaks.bed.gz"))
 
