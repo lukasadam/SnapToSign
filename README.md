@@ -1,48 +1,81 @@
-# SnapToSign (h5ad → Signac Converter)
+# SnapToSign
 
-A small command-line tool to convert paired RNA and ATAC .h5ad files into a Signac-compatible directory structure, including fragment files, for downstream analysis in R / Seurat–Signac.
+Convert paired RNA+ATAC AnnData (.h5ad) to a Signac/Seurat-ready format:
 
-## ✨ What this does
-•	Loads RNA and ATAC AnnData (.h5ad) objects
-•	Exports them into a directory layout expected by Signac
-•	Links or copies ATAC fragment files
-•	Supports optional layers for RNA and ATAC assays
+1) `py2disc` exports a Signac-compatible directory structure
+2) `disc2r` loads that directory and writes a Seurat object (`.rds`)
 
-## 🔧 Installation (using uv)
+## Quickstart (Docker)
 
-This project uses uv for fast, reproducible Python dependency management.
-
-1️⃣ Install uv
-
-If you don’t have uv yet:
+Build the image:
 
 ```bash
-curl -LsSf https://astral.sh/uv/install.sh | sh
+docker build -t snaptosign:local .
 ```
 
-2️⃣ Clone the repository
+Run everything in one step (mounted working directory):
 
 ```bash
-git clone https://github.com/lukasadam/SnapToSign
-cd SnapToSign
+chmod +x run_snaptosign.sh
+./run_snaptosign.sh data/rna.h5ad data/atac.h5ad out data/object.rds
 ```
 
-3️⃣ Create a virtual environment
+Optional fragments (globs work):
 
 ```bash
-uv create venv
+./run_snaptosign.sh \
+	data/rna.h5ad \
+	data/atac.h5ad \
+	out \
+	data/object.rds \
+	data/fragments/*.tsv.gz
 ```
 
-4️⃣ Install dependencies for the project
+If you tagged the image differently:
+
+```bash
+SNAPTOSIGN_IMAGE=snaptosign:ci ./run_snaptosign.sh \
+	data/rna.h5ad \
+	data/atac.h5ad \
+	out \
+	data/object.rds
+```
+
+## Apptainer/Singularity
+
+Build a `.sif`:
+
+```bash
+apptainer build snaptosign.sif Apptainer.def
+```
+
+Run (no bind flags needed if your cluster auto-binds `$PWD`; otherwise add `-B $PWD`):
+
+```bash
+apptainer exec snaptosign.sif py2disc --help
+apptainer exec snaptosign.sif disc2r --help
+```
+
+## CLI usage
+
+Export directory structure:
+
+```bash
+py2disc --rna_h5ad rna.h5ad --atac_h5ad atac.h5ad --out_dir disc_out
+```
+
+Import to `.rds`:
+
+```bash
+disc2r --disc_dir disc_out --out_file object.rds
+```
+
+## Local (no Docker)
+
+Python (installs `py2disc` and `snaptosign`):
 
 ```bash
 uv pip install -e .
 ```
 
-## 🚀 Usage
-
-Run the script from the command line:
-
-```bash
-py2disc --rna_h5ad path/to/rna.h5ad --atac_h5ad path/to/atac.h5ad --fragment_files path/to/fragments/* --out_dir path/to/output
-```
+R: use `r/disc2r.R` (requires Seurat + Signac + optparse + GenomicRanges).

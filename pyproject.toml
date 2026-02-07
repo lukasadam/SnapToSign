@@ -15,4 +15,5 @@ requires = ["setuptools>=42", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project.scripts]
-snaptosign = "snaptosign.cli:main"
+snaptosign = "py.cli:main"
+py2disc = "py.cli:main"
