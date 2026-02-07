@@ -105,4 +105,4 @@ class TestExporter(unittest.TestCase):
             )
 
             self.assertTrue((out_dir / "fragments" / "fragA.tsv.gz").exists())
-            self.assertTrue((out_dir / "fragments" / "fragA.tsv.tbi").exists())
+            self.assertTrue((out_dir / "fragments" / "fragA.tsv.gz.tbi").exists())

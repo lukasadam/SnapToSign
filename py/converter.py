@@ -286,10 +286,11 @@ def export_h5ad_to_signac_dir(
             else:
                 dest.symlink_to(fpath)
 
-            # Also copy the index file if present
-            fpath_idx = fpath.with_suffix(".tsv.gz.tbi")
+            # Also copy the tabix index file if present.
+            # Tabix convention is to store index next to the gz file as `<file>.tbi`.
+            fpath_idx = Path(str(fpath) + ".tbi")
             if fpath_idx.exists():
-                dest_idx = dest.with_suffix(".tbi")
+                dest_idx = Path(str(dest) + ".tbi")
                 if copy_fragments:
                     shutil.copy2(fpath_idx, dest_idx)
                 else:
