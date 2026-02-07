@@ -21,7 +21,7 @@ jobs:
           -v "${{ github.workspace }}":/work
           -w /work
           snaptosign:test
-          bash -lc "python -m pip install --no-cache-dir coverage && coverage run -m unittest discover -s tests -p 'test*.py' && coverage xml -o coverage.xml"
+          micromamba run -n base bash -lc "python -m pip install --no-cache-dir coverage && coverage run -m unittest discover -s tests -p 'test*.py' && coverage xml -o coverage.xml"
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
@@ -37,4 +37,4 @@ jobs:
           -v "${{ github.workspace }}":/work
           -w /work
           snaptosign:test
-          Rscript r/tests/run_tests.R
+          micromamba run -n base Rscript r/tests/run_tests.R
