@@ -1,5 +1,11 @@
 # SnapToSign
 
+[![tests](https://github.com/lukasadam/SnapToSign/actions/workflows/tests.yml/badge.svg)](https://github.com/lukasadam/SnapToSign/actions/workflows/tests.yml)
+[![ruff](https://github.com/lukasadam/SnapToSign/actions/workflows/ruff.yml/badge.svg)](https://github.com/lukasadam/SnapToSign/actions/workflows/ruff.yml)
+[![air](https://github.com/lukasadam/SnapToSign/actions/workflows/air.yml/badge.svg)](https://github.com/lukasadam/SnapToSign/actions/workflows/air.yml)
+[![docker](https://github.com/lukasadam/SnapToSign/actions/workflows/docker.yml/badge.svg)](https://github.com/lukasadam/SnapToSign/actions/workflows/docker.yml)
+[![codecov](https://codecov.io/gh/lukasadam/SnapToSign/branch/main/graph/badge.svg)](https://codecov.io/gh/lukasadam/SnapToSign)
+
 Convert paired RNA+ATAC AnnData (.h5ad) to a Signac/Seurat-ready format:
 
 1) `py2disc` exports a Signac-compatible directory structure

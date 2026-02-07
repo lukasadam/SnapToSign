@@ -15,13 +15,20 @@ jobs:
       - name: Build image
         run: docker build -t snaptosign:test .
 
-      - name: Python tests (unittest)
+      - name: Python tests + coverage
         run: >-
           docker run --rm
           -v "${{ github.workspace }}":/work
           -w /work
           snaptosign:test
-          python -m unittest discover -s tests -p 'test*.py'
+          bash -lc "python -m pip install --no-cache-dir coverage && coverage run -m unittest discover -s tests -p 'test*.py' && coverage xml -o coverage.xml"
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage.xml
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: R tests (minimal)
         run: >-
