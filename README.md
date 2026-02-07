@@ -20,6 +20,12 @@ chmod +x run_snaptosign.sh
 ./run_snaptosign.sh data/rna.h5ad data/atac.h5ad out data/object.rds
 ```
 
+Equivalent (explicit flags):
+
+```bash
+./run_snaptosign.sh --rna_h5ad data/rna.h5ad --atac_h5ad data/atac.h5ad --disc_out_dir out --out_rds data/object.rds
+```
+
 Optional fragments (globs work):
 
 ```bash
@@ -29,6 +35,17 @@ Optional fragments (globs work):
 	out \
 	data/object.rds \
 	data/fragments/*.tsv.gz
+```
+
+Or with flags:
+
+```bash
+./run_snaptosign.sh \
+  --rna_h5ad data/rna.h5ad \
+  --atac_h5ad data/atac.h5ad \
+  --disc_out_dir out \
+  --out_rds data/object.rds \
+  --fragment_files data/fragments/*.tsv.gz
 ```
 
 If you tagged the image differently:
