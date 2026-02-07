@@ -1,0 +1,25 @@
+name: air
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  air:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Air
+        run: |
+          curl -LsSf https://github.com/posit-dev/air/releases/latest/download/air-installer.sh | sh
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Check R formatting
+        run: |
+          air format --check r
