@@ -18,10 +18,11 @@ jobs:
       - name: Python tests + coverage
         run: >-
           docker run --rm
+          --user 0:0
           -v "${{ github.workspace }}":/work
           -w /work
           snaptosign:test
-          micromamba run -n base sh -c "python -m pip install --no-cache-dir coverage && python -m coverage run -m unittest discover -s tests -p 'test*.py' && python -m coverage xml -o coverage.xml"
+          micromamba run -n base sh -c "python -m pip install --no-cache-dir coverage && COVERAGE_FILE=/tmp/.coverage python -m coverage run -m unittest discover -s tests -p 'test*.py' && COVERAGE_FILE=/tmp/.coverage python -m coverage xml -o /work/coverage.xml"
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v5
@@ -34,6 +35,7 @@ jobs:
       - name: R tests (minimal)
         run: >-
           docker run --rm
+          --user 0:0
           -v "${{ github.workspace }}":/work
           -w /work
           snaptosign:test
