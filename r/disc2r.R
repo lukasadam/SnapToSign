@@ -112,8 +112,14 @@ main <- function() {
   message("Conversion complete!")
   message(sprintf("Seurat object saved to: %s", opt$out_file))
   message(sprintf("Number of cells: %d", ncol(seurat_obj)))
-  message(sprintf("Assays: %s", paste(names(seurat_obj@assays), collapse = ", ")))
-  message(sprintf("Reductions: %s", paste(names(seurat_obj@reductions), collapse = ", ")))
+  message(sprintf(
+    "Assays: %s",
+    paste(names(seurat_obj@assays), collapse = ", ")
+  ))
+  message(sprintf(
+    "Reductions: %s",
+    paste(names(seurat_obj@reductions), collapse = ", ")
+  ))
 }
 
 

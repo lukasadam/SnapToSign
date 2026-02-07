@@ -17,18 +17,27 @@ library(Matrix)
   mtx_path <- file.path(dir_path, "matrix.mtx.gz")
   barcodes_path <- file.path(dir_path, "barcodes.tsv.gz")
   features_path <- file.path(dir_path, "features.tsv.gz")
-  
+
   # Read matrix
   mat <- Matrix::readMM(gzfile(mtx_path))
-  
+
   # Read barcodes (cell names)
-  barcodes <- read.table(gzfile(barcodes_path), header = FALSE, stringsAsFactors = FALSE)
+  barcodes <- read.table(
+    gzfile(barcodes_path),
+    header = FALSE,
+    stringsAsFactors = FALSE
+  )
   colnames(mat) <- barcodes$V1
-  
+
   # Read features (gene/peak names)
-  features <- read.table(gzfile(features_path), header = FALSE, stringsAsFactors = FALSE, sep = "\t")
+  features <- read.table(
+    gzfile(features_path),
+    header = FALSE,
+    stringsAsFactors = FALSE,
+    sep = "\t"
+  )
   rownames(mat) <- features$V1
-  
+
   return(mat)
 }
 
@@ -72,24 +81,29 @@ library(Matrix)
 #' @export
 import_snaptosign_dir <- function(input_dir, fragment_dir = NULL) {
   input_dir <- normalizePath(input_dir, mustWork = TRUE)
-  
+
   if (is.null(fragment_dir)) {
     fragment_dir <- file.path(input_dir, "fragments")
   }
-  
+
   message("Loading RNA data...")
   rna_dir <- file.path(input_dir, "rna")
   rna_mat <- .read_10x_mtx(rna_dir)
-  
+
   message("Loading ATAC data...")
   atac_dir <- file.path(input_dir, "atac")
   atac_mat <- .read_10x_mtx(atac_dir)
-  
+
   # Read peaks BED file for ATAC
   peaks_path <- file.path(atac_dir, "peaks.bed.gz")
-  peaks <- read.table(gzfile(peaks_path), header = FALSE, stringsAsFactors = FALSE, sep = "\t")
+  peaks <- read.table(
+    gzfile(peaks_path),
+    header = FALSE,
+    stringsAsFactors = FALSE,
+    sep = "\t"
+  )
   colnames(peaks) <- c("chr", "start", "end", "name")
-  
+
   # Create GRanges object for peaks
   peak_ranges <- GenomicRanges::makeGRangesFromDataFrame(
     peaks,
@@ -98,7 +112,7 @@ import_snaptosign_dir <- function(input_dir, fragment_dir = NULL) {
     end.field = "end"
   )
   names(peak_ranges) <- peaks$name
-  
+
   message("Creating Seurat object with RNA assay...")
   # Create Seurat object with RNA data
   seurat_obj <- CreateSeuratObject(
@@ -106,28 +120,35 @@ import_snaptosign_dir <- function(input_dir, fragment_dir = NULL) {
     assay = "RNA",
     project = "SnapToSign"
   )
-  
+
   message("Adding ATAC assay...")
   # Create ChromatinAssay for ATAC data
   # Find fragment files
   fragment_files <- NULL
   if (dir.exists(fragment_dir)) {
-    fragment_files <- list.files(fragment_dir, pattern = "\\.tsv\\.gz$", full.names = TRUE)
+    fragment_files <- list.files(
+      fragment_dir,
+      pattern = "\\.tsv\\.gz$",
+      full.names = TRUE
+    )
     if (length(fragment_files) > 0) {
-      message(sprintf("Found %d fragment file(s)", length(fragment_files)))
+      message(sprintf(
+        "Found %d fragment file(s)",
+        length(fragment_files)
+      ))
     } else {
       fragment_files <- NULL
     }
   }
-  
+
   atac_assay <- CreateChromatinAssay(
     counts = atac_mat,
     ranges = peak_ranges,
     fragments = fragment_files
   )
-  
+
   seurat_obj[["ATAC"]] <- atac_assay
-  
+
   # Load metadata
   message("Loading metadata...")
   meta_dir <- file.path(input_dir, "meta")
@@ -137,14 +158,17 @@ import_snaptosign_dir <- function(input_dir, fragment_dir = NULL) {
     # Ensure metadata rows match Seurat object cells
     shared_cells <- intersect(colnames(seurat_obj), rownames(metadata))
     if (length(shared_cells) > 0) {
-      seurat_obj <- AddMetaData(seurat_obj, metadata[shared_cells, , drop = FALSE])
+      seurat_obj <- AddMetaData(
+        seurat_obj,
+        metadata[shared_cells, , drop = FALSE]
+      )
     }
   }
-  
+
   # Load dimensionality reductions
   message("Loading dimensionality reductions...")
   reductions_dir <- file.path(input_dir, "reductions")
-  
+
   # RNA PCA
   rna_pca <- .read_reduction(reductions_dir, "rna_pca.csv.gz")
   if (!is.null(rna_pca)) {
@@ -159,7 +183,7 @@ import_snaptosign_dir <- function(input_dir, fragment_dir = NULL) {
       )
     }
   }
-  
+
   # RNA UMAP
   rna_umap <- .read_reduction(reductions_dir, "rna_umap.csv.gz")
   if (!is.null(rna_umap)) {
@@ -174,14 +198,17 @@ import_snaptosign_dir <- function(input_dir, fragment_dir = NULL) {
       )
     }
   }
-  
+
   # ATAC Spectral (LSI)
   atac_spectral <- .read_reduction(reductions_dir, "atac_spectral.csv.gz")
   if (!is.null(atac_spectral)) {
     shared_cells <- intersect(colnames(seurat_obj), rownames(atac_spectral))
     if (length(shared_cells) > 0) {
       atac_spectral <- atac_spectral[shared_cells, , drop = FALSE]
-      colnames(atac_spectral) <- paste0("LSI_", seq_len(ncol(atac_spectral)))
+      colnames(atac_spectral) <- paste0(
+        "LSI_",
+        seq_len(ncol(atac_spectral))
+      )
       seurat_obj[["lsi"]] <- CreateDimReducObject(
         embeddings = atac_spectral,
         key = "LSI_",
@@ -189,7 +216,7 @@ import_snaptosign_dir <- function(input_dir, fragment_dir = NULL) {
       )
     }
   }
-  
+
   # ATAC UMAP
   atac_umap <- .read_reduction(reductions_dir, "atac_umap.csv.gz")
   if (!is.null(atac_umap)) {
@@ -204,7 +231,7 @@ import_snaptosign_dir <- function(input_dir, fragment_dir = NULL) {
       )
     }
   }
-  
+
   message("Seurat/Signac object created successfully!")
   return(seurat_obj)
 }
