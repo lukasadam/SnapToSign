@@ -21,7 +21,7 @@ DISC_OUT_DIR="$3"
 OUT_RDS="$4"
 shift 4
 
-IMAGE="${SNAPTOSIGN_IMAGE:-snaptosign:local}"
+IMAGE="${SNAPTOSIGN_IMAGE:-ghcr.io/lukasadam/snaptosign:latest}"
 
 mkdir -p "$DISC_OUT_DIR"
 

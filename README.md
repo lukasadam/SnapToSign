@@ -7,10 +7,10 @@ Convert paired RNA+ATAC AnnData (.h5ad) to a Signac/Seurat-ready format:
 
 ## Quickstart (Docker)
 
-Build the image:
+Pull the latest image from GHCR:
 
 ```bash
-docker build -t snaptosign:local .
+docker pull ghcr.io/lukasadam/snaptosign:latest
 ```
 
 Run everything in one step (mounted working directory):
@@ -34,11 +34,18 @@ Optional fragments (globs work):
 If you tagged the image differently:
 
 ```bash
-SNAPTOSIGN_IMAGE=snaptosign:ci ./run_snaptosign.sh \
+SNAPTOSIGN_IMAGE=ghcr.io/lukasadam/snaptosign:sha-<commit> ./run_snaptosign.sh \
 	data/rna.h5ad \
 	data/atac.h5ad \
 	out \
 	data/object.rds
+```
+
+### Build locally (optional)
+
+```bash
+docker build -t snaptosign:local .
+SNAPTOSIGN_IMAGE=snaptosign:local ./run_snaptosign.sh data/rna.h5ad data/atac.h5ad out data/object.rds
 ```
 
 ## CLI usage
