@@ -5,7 +5,8 @@ from __future__ import annotations
 import gzip
 import shutil
 from pathlib import Path
-from typing import Dict, Optional
+from collections.abc import Mapping, Sequence
+from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -155,7 +156,7 @@ def export_h5ad_to_signac_dir(
     rna: ad.AnnData,
     atac: ad.AnnData,
     out_dir: Path,
-    fragment_files: Optional[Dict[str, Path]] = None,
+    fragment_files: Optional[Union[Mapping[str, Path], Sequence[Path]]] = None,
     rna_layer: Optional[str] = None,
     atac_layer: Optional[str] = None,
     copy_fragments: bool = True,
@@ -172,8 +173,9 @@ def export_h5ad_to_signac_dir(
         AnnData object containing ATAC data.
     out_dir : Path
         Output directory path.
-    fragment_files : Optional[Dict[str, Path]], optional
-        Dictionary mapping sample IDs to fragment file paths (default is None).
+    fragment_files : Optional[Mapping[str, Path] | Sequence[Path]], optional
+        Either a mapping of sample IDs to fragment file paths, or a list of fragment
+        file paths (default is None).
     rna_layer : Optional[str], optional
         Layer name in rna to use for RNA counts (default is None, uses .X).
     atac_layer : Optional[str], optional
@@ -253,10 +255,26 @@ def export_h5ad_to_signac_dir(
     _export_obsm(atac, "X_spectral", "atac_spectral.csv.gz", out_dir=out_dir)
     _export_obsm(atac, "X_umap", "atac_umap.csv.gz", out_dir=out_dir)
 
+    def _sample_id_from_fragment_path(path: Path) -> str:
+        name = path.name
+        if name.endswith(".tsv.gz"):
+            return name[: -len(".tsv.gz")]
+        if name.endswith(".tsv"):
+            return name[: -len(".tsv")]
+        return path.stem
+
     # If fragment_files is provided, copy/symlink them into the fragments directory
     if fragment_files is not None:
+        if isinstance(fragment_files, Mapping):
+            fragment_items = fragment_files.items()
+        else:
+            fragment_items = [
+                (_sample_id_from_fragment_path(Path(p)), Path(p))
+                for p in fragment_files
+            ]
+
         # Copy/symlink all provided fragments into out_dir/fragments
-        for sample_id, fpath in fragment_files.items():
+        for sample_id, fpath in fragment_items:
             fpath = Path(fpath)
             if not fpath.exists():
                 continue

@@ -1,0 +1,32 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  docker-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t snaptosign:test .
+
+      - name: Python tests (unittest)
+        run: >-
+          docker run --rm
+          -v "${{ github.workspace }}":/work
+          -w /work
+          snaptosign:test
+          python -m unittest discover -s tests -p 'test*.py'
+
+      - name: R tests (minimal)
+        run: >-
+          docker run --rm
+          -v "${{ github.workspace }}":/work
+          -w /work
+          snaptosign:test
+          Rscript r/tests/run_tests.R
