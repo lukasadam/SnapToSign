@@ -43,7 +43,7 @@ RUN chmod +x /app/r/disc2r.R /app/r/cli.R || true
 # These wrappers ensure the micromamba base env is used even when not interactively activated.
 USER root
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends build-essential \
+    && apt-get install -y --no-install-recommends build-essential procps \
     && rm -rf /var/lib/apt/lists/*
 RUN printf '%s\n' \
     '#!/usr/bin/env bash' \
