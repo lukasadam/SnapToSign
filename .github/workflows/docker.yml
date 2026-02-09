@@ -42,7 +42,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: ./Dockerfile
+          file: ./docker/snaptosign.Dockerfile
           push: ${{ github.event_name == 'push' }}
           load: false
           tags: ${{ steps.meta.outputs.tags }}

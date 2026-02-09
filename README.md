@@ -67,9 +67,10 @@ SNAPTOSIGN_IMAGE=ghcr.io/lukasadam/snaptosign:sha-<commit> ./run_snaptosign.sh \
 ### Build locally (optional)
 
 ```bash
-docker build -t snaptosign:local .
+docker build -t snaptosign:local -f docker/snaptosign.Dockerfile .
 SNAPTOSIGN_IMAGE=snaptosign:local ./run_snaptosign.sh data/rna.h5ad data/atac.h5ad out data/object.rds
 ```
+
 
 ## CLI usage
 

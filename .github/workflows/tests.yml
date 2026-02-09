@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Build image
-        run: docker build -t snaptosign:test .
+        run: docker build -t snaptosign:test -f docker/snaptosign.Dockerfile .
 
       - name: Python tests + coverage
         run: >-
