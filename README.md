@@ -11,19 +11,44 @@ Convert paired RNA+ATAC AnnData (.h5ad) to a Signac/Seurat-ready format:
 1) `py2disc` exports a Signac-compatible directory structure
 2) `disc2r` loads that directory and writes a Seurat object (`.rds`)
 
-## Quickstart (Docker)
+## Quickstart (Apptainer/Singularity)
 
-Pull the latest image from GHCR:
+This repo publishes a container image to GHCR. On many HPC clusters you cannot run Docker/Podman directly, but you can run the same image via Apptainer (or Singularity).
+
+### Option A: pull a local `.sif` (recommended)
 
 ```bash
-docker pull ghcr.io/lukasadam/snaptosign:latest
+apptainer pull snaptosign.sif docker://ghcr.io/lukasadam/snaptosign:latest
 ```
 
-Run everything in one step (mounted working directory):
+If `snaptosign.sif` is in your current directory, `run_snaptosign.sh` will use it by default.
+
+(If your cluster uses `singularity`, the commands are the same: replace `apptainer` with `singularity`.)
+
+### Option B: run directly from GHCR
+
+```bash
+SNAPTOSIGN_IMAGE=docker://ghcr.io/lukasadam/snaptosign:latest \
+	./run_snaptosign.sh data/rna.h5ad data/atac.h5ad out data/object.rds
+```
+
+Run everything in one step:
 
 ```bash
 chmod +x run_snaptosign.sh
-./run_snaptosign.sh data/rna.h5ad data/atac.h5ad out data/object.rds
+SNAPTOSIGN_IMAGE=$PWD/snaptosign.sif \
+	./run_snaptosign.sh data/rna.h5ad data/atac.h5ad out data/object.rds
+```
+
+Absolute paths work too (useful on clusters):
+
+```bash
+SNAPTOSIGN_IMAGE=/path/to/snaptosign.sif \
+	./run_snaptosign.sh \
+		/abs/path/rna.h5ad \
+		/abs/path/atac.h5ad \
+		/abs/path/conversion_out \
+		/abs/path/object.rds
 ```
 
 Equivalent (explicit flags):
@@ -57,18 +82,18 @@ Or with flags:
 If you tagged the image differently:
 
 ```bash
-SNAPTOSIGN_IMAGE=ghcr.io/lukasadam/snaptosign:sha-<commit> ./run_snaptosign.sh \
+SNAPTOSIGN_IMAGE=docker://ghcr.io/lukasadam/snaptosign:sha-<commit> ./run_snaptosign.sh \
 	data/rna.h5ad \
 	data/atac.h5ad \
 	out \
 	data/object.rds
 ```
 
-### Build locally (optional)
+### Build locally with Docker (optional, for development)
 
 ```bash
 docker build -t snaptosign:local -f docker/snaptosign.Dockerfile .
-SNAPTOSIGN_IMAGE=snaptosign:local ./run_snaptosign.sh data/rna.h5ad data/atac.h5ad out data/object.rds
+echo "If you want to run a locally-built Docker image, use Docker directly (or push it to a registry and use the Apptainer workflow above)."
 ```
 
 
