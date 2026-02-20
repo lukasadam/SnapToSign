@@ -29,6 +29,7 @@ RUN micromamba install -y -n base -c conda-forge \
     scipy \
     anndata \
     scanpy \
+    seaborn \
     && micromamba clean -a -y
 
 # Copy the project
